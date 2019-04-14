@@ -1,29 +1,8 @@
 import numpy as np
+from Data import data_generate
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
-
-
-print(sigmoid(0))
-d_size = 128
-x_train = np.array([[np.random.uniform(-1,1),np.random.uniform(-1,1)]])
-if x_train[0][0]*x_train[0][0] < x_train[0][1]:
-    label = np.array([[0]])
-else:
-    label = np.array([[1]])
-labels = label
-for i in range(d_size-1):
-    data = np.array([[np.random.uniform(-1,1),np.random.uniform(-1,1)]])
-    x_train = np.concatenate((x_train,data))
-    if data[0][0]*data[0][0] < data[0][1]:
-        label = np.array([[0]])
-    else:
-        label = np.array([[1]])
-    labels = np.concatenate((labels,label))
-
-print(x_train.shape)
-
-
 
 # two layer Network
 class TwoLayerNet():
@@ -51,14 +30,14 @@ class TwoLayerNet():
         return cost
 
     def back_propagation(self, a1, a2, x, y):
-
+        m = y.shape[1]
         dz2 = a2 - y
-        dw2 = np.dot(dz2, a1.T) / d_size
-        db2 = np.sum(dz2, axis=1, keepdims=True) / d_size
+        dw2 = np.dot(dz2, a1.T) / m
+        db2 = np.sum(dz2, axis=1, keepdims=True) / m
         d_gz = 1 - np.power(a1, 2)
         dz1 = np.dot(self.params["w2"].T, dz2) * d_gz
-        dw1 = np.dot(dz1, x.T) / d_size
-        db1 = np.sum(dz1, axis=1, keepdims=True) / d_size
+        dw1 = np.dot(dz1, x.T) / m
+        db1 = np.sum(dz1, axis=1, keepdims=True) / m
 
         grads = {"w1": dw1,
                  "w2": dw2,
@@ -79,14 +58,21 @@ class TwoLayerNet():
             grads = self.back_propagation(a1, a2, x, y)
 
             self.update_parameters(grads, lr=lr)
-            if (i % 100 == 0):
-                print(i,self.cost(a2,y) ,self.predict(x))
+            #if (i % 100 == 0):
+            #    print(i,self.cost(a2,y) ,self.predict(x,y))
 
-    def predict(self, x):
+    def predict(self, x, y):
         a1, a2 = self.propagation(x)
-        predictions = a2 > 0.5
+        predictions = abs(a2 - y) < 0.5
+        # print(predictions)
 
         return np.mean(predictions)
 
 model = TwoLayerNet()
-model.training(x_train.T,labels.T,1000,0.005)
+for i in range(10):
+    x_train, y_train = data_generate()
+    model.training(x_train.T,y_train.T,num_iter=5000,lr =0.5)
+    #x_valid, y_valid = data_generate()
+    #acc = model.predict(x_valid.T,y_valid.T)
+    acc = model.predict(x_train.T, y_train.T)
+    print(i,acc)

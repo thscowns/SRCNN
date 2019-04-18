@@ -34,7 +34,7 @@ class TwoLayerNet():
         dz2 = a2 - y
         dw2 = np.dot(dz2, a1.T) / m
         db2 = np.sum(dz2, axis=1, keepdims=True) / m
-        d_gz = 1 - np.power(a1, 2)
+        d_gz = sigmoid(a1) * (1 - sigmoid(a1))# 1 - np.power(a1, 2)
         dz1 = np.dot(self.params["w2"].T, dz2) * d_gz
         dw1 = np.dot(dz1, x.T) / m
         db1 = np.sum(dz1, axis=1, keepdims=True) / m
@@ -58,8 +58,8 @@ class TwoLayerNet():
             grads = self.back_propagation(a1, a2, x, y)
 
             self.update_parameters(grads, lr=lr)
-            #if (i % 100 == 0):
-            #    print(i,self.cost(a2,y) ,self.predict(x,y))
+            if (i % 1000 == 0):
+                print(i,self.cost(a2,y) ,self.predict(x,y))
 
     def predict(self, x, y):
         a1, a2 = self.propagation(x)

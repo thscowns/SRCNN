@@ -1,6 +1,7 @@
 import numpy as np
 
-def data_generate(d_size = 128):
+def data_generate(d_size = 128, seed = 0):
+    np.random.seed(seed)
     x_train = np.array([[np.random.uniform(-1,1),np.random.uniform(-1,1)]])
     if x_train[0][0]*x_train[0][0] < x_train[0][1]:
         label = np.array([[0]])

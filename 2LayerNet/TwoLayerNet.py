@@ -9,12 +9,14 @@ class TwoLayerNet():
     def __init__(self,seed = 0):
         np.random.seed(seed)
         self.params = {}
-        self.params['w1'] = np.random.randn(2, 2) * 1/np.sqrt(2)# input - 2 , hidden 2
+        self.params['w1'] = np.random.randn(2, 2)# * 1/np.sqrt(2)# input - 2 , hidden 2
         self.params['b1'] = np.zeros((2,1))
-        self.params['w2'] = np.random.randn(1,2) * 1/np.sqrt(2) # hidden2 , output - 1
+        self.params['w2'] = np.random.randn(1,2)# * 1/np.sqrt(2) # hidden2 , output - 1
         self.params['b2'] = np.zeros((1,1))
-        '''for param in self.params.items():
-            print(param)'''
+
+    def print_param(self):
+        for param in self.params.items():
+            print(param)
 
     def propagation(self, x):
         z1 = np.dot(self.params["w1"],x) + self.params["b1"]
@@ -37,7 +39,7 @@ class TwoLayerNet():
         dz2 = a2 - y
         dw2 = np.dot(dz2, a1.T) / m
         db2 = np.sum(dz2, axis=1, keepdims=True) / m
-        d_gz = sigmoid(a1) * (1 - sigmoid(a1))# 1 - np.power(a1, 2)
+        d_gz = sigmoid(a1) * (1 - sigmoid(a1))
         dz1 = np.dot(self.params["w2"].T, dz2) * d_gz
         dw1 = np.dot(dz1, x.T) / m
         db1 = np.sum(dz1, axis=1, keepdims=True) / m
@@ -71,17 +73,21 @@ class TwoLayerNet():
 
         return np.mean(predictions)
 
-lrs = [0.1 * i for i in range(1,6)]
+#learning rate list
+lrs = [0.2 * i for i in range(1,2)]
+print("================Numpy====================")
 for lr in lrs:
     print("======== learning rate : ",lr,"===========")
-    model = TwoLayerNet(0)
+    model = TwoLayerNet(seed = 0)
     sum = 0
     for i in range(10):
-        x_train, y_train = data_generate()
-        model.training(x_train.T,y_train.T,num_iter=500,lr =lr)
-        x_valid, y_valid = data_generate()
+        x_train, y_train = data_generate(seed =i)
+        model.training(x_train.T,y_train.T,num_iter=5000,lr =lr)
+        x_valid, y_valid = data_generate(seed = 11)
         acc = model.predict(x_valid.T,y_valid.T)
         #acc = model.predict(x_train.T, y_train.T)
         sum += acc
-        #print(i ,"iteration, accuracy : ",acc)
-    print("====","lr : ",lr,",mean accuracy : ", sum/10,"====")
+        print(i ,"iteration, accuracy : ",acc)
+    print("====","lr : ",lr,",mean accuracy : ", sum/10)
+    model.print_param()
+

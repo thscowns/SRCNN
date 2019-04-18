@@ -6,12 +6,15 @@ def sigmoid(x):
 
 # two layer Network
 class TwoLayerNet():
-    def __init__(self):
+    def __init__(self,seed = 0):
+        np.random.seed(seed)
         self.params = {}
-        self.params['w1'] = np.random.randn(2, 2)# input - 2 , hidden 2
+        self.params['w1'] = np.random.randn(2, 2) * 1/np.sqrt(2)# input - 2 , hidden 2
         self.params['b1'] = np.zeros((2,1))
-        self.params['w2'] = np.random.randn(1,2) # hidden2 , output - 1
+        self.params['w2'] = np.random.randn(1,2) * 1/np.sqrt(2) # hidden2 , output - 1
         self.params['b2'] = np.zeros((1,1))
+        '''for param in self.params.items():
+            print(param)'''
 
     def propagation(self, x):
         z1 = np.dot(self.params["w1"],x) + self.params["b1"]
@@ -58,8 +61,8 @@ class TwoLayerNet():
             grads = self.back_propagation(a1, a2, x, y)
 
             self.update_parameters(grads, lr=lr)
-            if (i % 1000 == 0):
-                print(i,self.cost(a2,y) ,self.predict(x,y))
+            #if (i % 1000 == 0):
+            #    print(i,self.cost(a2,y) ,self.predict(x,y))
 
     def predict(self, x, y):
         a1, a2 = self.propagation(x)
@@ -68,11 +71,17 @@ class TwoLayerNet():
 
         return np.mean(predictions)
 
-model = TwoLayerNet()
-for i in range(10):
-    x_train, y_train = data_generate()
-    model.training(x_train.T,y_train.T,num_iter=5000,lr =0.5)
-    #x_valid, y_valid = data_generate()
-    #acc = model.predict(x_valid.T,y_valid.T)
-    acc = model.predict(x_train.T, y_train.T)
-    print(i,acc)
+lrs = [0.1 * i for i in range(1,6)]
+for lr in lrs:
+    print("======== learning rate : ",lr,"===========")
+    model = TwoLayerNet(0)
+    sum = 0
+    for i in range(10):
+        x_train, y_train = data_generate()
+        model.training(x_train.T,y_train.T,num_iter=500,lr =lr)
+        x_valid, y_valid = data_generate()
+        acc = model.predict(x_valid.T,y_valid.T)
+        #acc = model.predict(x_train.T, y_train.T)
+        sum += acc
+        #print(i ,"iteration, accuracy : ",acc)
+    print("====","lr : ",lr,",mean accuracy : ", sum/10,"====")

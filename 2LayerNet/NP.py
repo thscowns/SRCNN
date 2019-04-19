@@ -39,7 +39,7 @@ class TwoLayerNet():
         dz2 = a2 - y
         dw2 = np.dot(dz2, a1.T) / m
         db2 = np.sum(dz2, axis=1, keepdims=True) / m
-        d_gz = sigmoid(a1) * (1 - sigmoid(a1))
+        d_gz = a1 * (1 - a1)
         dz1 = np.dot(self.params["w2"].T, dz2) * d_gz
         dw1 = np.dot(dz1, x.T) / m
         db1 = np.sum(dz1, axis=1, keepdims=True) / m

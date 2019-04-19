@@ -7,11 +7,11 @@ X = tf.placeholder(tf.float32, shape=[None,2])
 Y = tf.placeholder(tf.float32, shape=[None,1])
 
 w1 = tf.Variable(tf.random_normal([2,2]))
-b1 = tf.Variable(tf.random_normal([2,1]))
+b1 = tf.Variable(tf.random_normal([1,2]))
 w2 = tf.Variable(tf.random_normal([2,1]))
 b2 = tf.Variable(tf.random_normal([1]))
 
-hypothesis = tf.sigmoid(tf.matmul(tf.sigmoid(tf.matmul(X,w1)),w2) + b2)
+hypothesis = tf.sigmoid(tf.matmul(tf.sigmoid(tf.matmul(X,w1) + b1),w2) + b2)
 
 cost = - tf.reduce_mean(Y*tf.log(hypothesis + epsilon) + (1-Y) * tf.log(1-hypothesis + epsilon))
 train = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(cost)
